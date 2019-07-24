@@ -1,5 +1,6 @@
 import time
 import os
+import rsa
 
 # import our modules
 from display.menu import *
@@ -24,33 +25,37 @@ player_c = []
 player_d = []
 player_dumy = []
 
+key = rsa.newkeys(4500)
+public_key = key[0]
+private_key = key[1]
+
 if game_type == 1:
     deal_to_multi_players(deck, player_a, player_b, player_c)
-    record_deck_csv(player_a, '争上游01的副牌.csv')
-    record_deck_csv(player_b, '争上游02的副牌.csv')
-    record_deck_csv(player_c, '争上游03的副牌.csv')
+    record_deck_crypted_csv(player_a, '争上游01的副牌.csv',public_key)
+    record_deck_crypted_csv(player_b, '争上游02的副牌.csv',public_key)
+    record_deck_crypted_csv(player_c, '争上游03的副牌.csv',public_key)
 if game_type == 2:
     deal_to_multi_players(deck, player_a, player_b, player_c, player_d)
-    record_deck_csv(player_a, '桥牌01的副牌.csv')
-    record_deck_csv(player_b, '桥牌02的副牌.csv')
-    record_deck_csv(player_c, '桥牌03的副牌.csv')
-    record_deck_csv(player_d, '桥牌04的副牌.csv')
+    record_deck_crypted_csv(player_a, '桥牌01的副牌.csv',public_key)
+    record_deck_crypted_csv(player_b, '桥牌02的副牌.csv',public_key)
+    record_deck_crypted_csv(player_c, '桥牌03的副牌.csv',public_key)
+    record_deck_crypted_csv(player_d, '桥牌04的副牌.csv',public_key)
 if game_type == 3:
     deal_to_multi_players_remain(
         deck, 3, player_dumy, player_a, player_b, player_c, player_d)
-    record_deck_csv(player_a, '三人斗地主01的副牌.csv')
-    record_deck_csv(player_b, '三人斗地主02的副牌.csv')
-    record_deck_csv(player_c, '三人斗地主03的副牌.csv')
-    record_deck_csv(player_d, '三人斗地主04的副牌.csv')
-    record_deck_csv(player_dumy, '三人斗地主-预留牌.csv')
+    record_deck_crypted_csv(player_a, '三人斗地主01的副牌.csv',public_key)
+    record_deck_crypted_csv(player_b, '三人斗地主02的副牌.csv',public_key)
+    record_deck_crypted_csv(player_c, '三人斗地主03的副牌.csv',public_key)
+    record_deck_crypted_csv(player_d, '三人斗地主04的副牌.csv',public_key)
+    record_deck_crypted_csv(player_dumy, '三人斗地主-预留牌.csv',public_key)
 if game_type == 4:
     deal_to_multi_players_remain(
         deck, 8, player_dumy, player_a, player_b, player_c, player_d)
-    record_deck_csv(player_a, '四人斗地主01的副牌.csv')
-    record_deck_csv(player_b, '四人斗地主02的副牌.csv')
-    record_deck_csv(player_c, '四人斗地主03的副牌.csv')
-    record_deck_csv(player_d, '四人斗地主04的副牌.csv')
-    record_deck_csv(player_dumy, '四人斗地主-预留牌.csv')
+    record_deck_crypted_csv(player_a, '四人斗地主01的副牌.csv',public_key)
+    record_deck_crypted_csv(player_b, '四人斗地主02的副牌.csv',public_key)
+    record_deck_crypted_csv(player_c, '四人斗地主03的副牌.csv',public_key)
+    record_deck_crypted_csv(player_d, '四人斗地主04的副牌.csv',public_key)
+    record_deck_crypted_csv(player_dumy, '四人斗地主-预留牌.csv',public_key)
 
 
 deck_no = dsp_show_deck(game_type)
@@ -79,7 +84,7 @@ elif (deck_no >-1 and deck_no <= 4) or deck_no == 9:
 
     if filename != 'no_such_a_file.csv':
         my_deck = []
-        read_deck_csv(filename,my_deck)
+        read_deck_crypted_csv(filename,my_deck,private_key)
         show_deck_para(my_deck)
     else:
         dsp_end()

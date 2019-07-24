@@ -1,7 +1,9 @@
 import random
 import codecs
 import os
+import rsa
 import csv
+from binascii import b2a_hex, a2b_hex
 
 def create_deck_54(new_deck):
     '推出一副54张牌'
@@ -84,6 +86,7 @@ def make_deck_by_type(play_type, out_deck):
         record_deck_csv(out_deck, '四人斗地主-刚洗好的牌.txt')
         return
 
+
 def record_deck_csv(deck_to_be_record,csv_filename):
     '用CSV格式记录一副牌'
 
@@ -94,7 +97,7 @@ def record_deck_csv(deck_to_be_record,csv_filename):
         writer.writerow(deck_to_be_record)
 
     return
-
+'''
 def read_deck_csv(csv_filename, out_deck):
     '读取 CSV 格式的牌，并把它读取到一个列表中去'
 
@@ -103,4 +106,38 @@ def read_deck_csv(csv_filename, out_deck):
         reader = csv.reader(csvfile)
         for line in reader:
             out_deck.extend(line)
+    return
+'''
+
+def record_deck_crypted_csv(deck_to_be_record,csv_filename,public_key):
+    '用加密的CSV格式记录一张牌'
+
+    csv_path = os.getcwd() + '\\deck_csv\\crypted_' + csv_filename
+    joined_deck = ','.join(deck_to_be_record)
+    row_data = rsa.encrypt(joined_deck.encode(),public_key)
+    row_data = b2a_hex(row_data)
+    f = open(csv_path,'wb')
+    f.write(row_data)
+    f.close()
+    return
+
+def read_deck_crypted_csv(csv_filename, out_deck, private_key):
+    '读取加密过的 CSV 格式的牌，并把它读取到一个列表中去'
+
+    in_path = os.getcwd() + '\\deck_csv\\crypted_' + csv_filename
+    f = open(in_path, 'rb')
+    line = f.read()
+    f.close()
+
+    s = a2b_hex(line)
+    row_data = rsa.decrypt(s, private_key)
+    #print('--debug: read from csv file : %s' % row_data.decode())
+    s = row_data.decode()
+    out_deck.extend(s.split(','))
+    print(out_deck)
+
+    '''# Poker 4.0 added
+    msg = '从文件 (%s) 中读取了牌的内容' % in_path
+    logger.debug(msg)
+    '''
     return
